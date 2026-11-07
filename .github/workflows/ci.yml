@@ -1,0 +1,36 @@
+name: NexusMatch CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
+        sanitizer: [none, asan_ubsan]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++-11 ninja-build
+
+      - name: Configure CMake
+        run: |
+          EXTRA_FLAGS=""
+          if [ "${{ matrix.sanitizer }}" = "asan_ubsan" ]; then
+            EXTRA_FLAGS="-DENABLE_ASAN_UBSAN=ON"
+          fi
+          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_COMPILER=g++-11 ${EXTRA_FLAGS}
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure

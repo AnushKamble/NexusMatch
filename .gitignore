@@ -1,0 +1,26 @@
+# Build outputs
+build/
+bin/
+lib/
+*.o
+*.obj
+*.exe
+*.a
+*.so
+*.dylib
+*.log
+*.tmp
+*.raw
+
+# IDE and tool files
+.vscode/
+.vs/
+*.swp
+*.user
+CMakeUserPresets.json
+
+# Benchmarks / local outputs
+workloads/generated/
+benchmark_results/
+wal_data/
+*.wal
