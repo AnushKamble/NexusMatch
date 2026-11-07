@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -fsanitize=address,undefined CMakeFiles/test_price_bitmap.dir/tests/test_price_bitmap.cpp.o -o test_price_bitmap  libnexusmatch_core.a -lpthread 
