@@ -1,2 +1,0 @@
-/usr/bin/ar qc libnexusmatch_core.a CMakeFiles/nexusmatch_core.dir/src/order_arena.cpp.o CMakeFiles/nexusmatch_core.dir/src/order_id_index.cpp.o CMakeFiles/nexusmatch_core.dir/src/price_bitmap.cpp.o
-/usr/bin/ranlib libnexusmatch_core.a
