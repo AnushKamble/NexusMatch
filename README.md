@@ -108,6 +108,20 @@ cmake --build build_tsan -j
 ./build/nexusmatch_bench --orders 1000000 --json benchmark_results.json --csv benchmark_results.csv
 ```
 
+### 3.6 Launch Interactive Web Trading Terminal
+NexusMatch includes an institutional-grade, real-time web trading terminal connected directly to the C++ matching engine via WebSocket:
+```bash
+# Start the web bridge and terminal
+python run_web.py
+```
+Open your browser at **`http://localhost:8088`** to access:
+- **Interactive Level 2 Depth Ladder (DOM):** Live orderbook with proportional visual volume bars, spread meter, and 1-click price entry.
+- **Order Execution Terminal:** Interactive order entry for Limit, Market, and Cancel commands with instant nanosecond latency readout.
+- **Self-Trade Prevention (STP) Interactive Test:** 1-click button to visibly demonstrate **Cancel Aggressor Remainder** STP policy in real time.
+- **Cumulative Depth Chart:** 60 FPS HTML5 Canvas plotting real-time bid and ask supply/demand curves.
+- **Live Trade Tape & Event Blotter:** Streaming match executions, order resting, cancellations, and invariant audit logs.
+- **Background Market Maker Simulation:** Toggle synthetic liquidity generator to watch the book dance in real time.
+
 ---
 
 ## 4. Benchmark Performance Matrix

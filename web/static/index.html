@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusMatch — Ultra-Low-Latency Matching Engine Terminal</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation Bar -->
+        <header class="top-nav">
+            <div class="brand">
+                <span class="logo-badge">NM</span>
+                <div class="brand-text">
+                    <h1>NexusMatch <span class="version-tag">C++20 LOB-01</span></h1>
+                    <span class="brand-sub">Deterministic Single-Writer Matching Engine</span>
+                </div>
+            </div>
+
+            <!-- Global Engine Telemetry Tickers -->
+            <div class="telemetry-bar">
+                <div class="telemetry-pill">
+                    <span class="pill-dot live-pulse"></span>
+                    <span class="pill-label">ENGINE</span>
+                    <span class="pill-val text-green" id="engineStatus">ONLINE (WSL2 C++)</span>
+                </div>
+                <div class="telemetry-pill">
+                    <span class="pill-label">LATENCY</span>
+                    <span class="pill-val text-highlight" id="lastLatency">190 ns</span>
+                </div>
+                <div class="telemetry-pill">
+                    <span class="pill-label">ALLOCATIONS</span>
+                    <span class="pill-val text-green" id="allocCounter">0 HEAP (STRICT)</span>
+                </div>
+                <div class="telemetry-pill">
+                    <span class="pill-label">INVARIANTS</span>
+                    <span class="pill-val text-green" id="invariantsBadge">18 / 18 PASS</span>
+                </div>
+                <div class="telemetry-pill">
+                    <span class="pill-label">STATE HASH</span>
+                    <span class="pill-val text-cyan font-mono" id="stateHash">0x00000000</span>
+                </div>
+                <div class="telemetry-pill">
+                    <span class="pill-label">ARENA</span>
+                    <span class="pill-val text-purple" id="arenaGauge">0 / 262,144</span>
+                </div>
+            </div>
+
+            <!-- Simulation & Control Toolbar -->
+            <div class="nav-actions">
+                <button class="btn btn-secondary" id="btnSeed" title="Seed realistic resting bid/ask depth">Seed Depth</button>
+                <button class="btn btn-secondary" id="btnBurst" title="Simulate a 50-order high-frequency burst">Burst (50)</button>
+                <button class="btn btn-primary" id="btnToggleSim">
+                    <span class="sim-indicator"></span>
+                    <span id="simBtnText">Start Market Maker</span>
+                </button>
+                <button class="btn btn-danger-outline" id="btnReset" title="Reset order book to empty state">Reset</button>
+            </div>
+        </header>
+
+        <!-- Main 3-Column Trading Terminal -->
+        <main class="terminal-grid">
+            <!-- Left Column: Order Entry & Blotter -->
+            <section class="panel panel-order-entry">
+                <div class="panel-header">
+                    <h2>ORDER ENTRY TICKET</h2>
+                    <span class="badge badge-mono">O(1) NOEXCEPT</span>
+                </div>
+
+                <div class="panel-body">
+                    <!-- Buy / Sell Side Selector -->
+                    <div class="side-selector">
+                        <button class="side-btn active-buy" id="btnSideBuy" data-side="buy">BUY / BID</button>
+                        <button class="side-btn" id="btnSideSell" data-side="sell">SELL / ASK</button>
+                    </div>
+
+                    <!-- Order Type Selector -->
+                    <div class="type-selector">
+                        <button class="type-pill active" data-type="limit">LIMIT</button>
+                        <button class="type-pill" data-type="market">MARKET</button>
+                        <button class="type-pill" data-type="cancel">CANCEL</button>
+                    </div>
+
+                    <!-- Order Inputs Form -->
+                    <form id="orderForm" onsubmit="return false;">
+                        <div class="form-group" id="groupPrice">
+                            <label for="inputPrice">
+                                <span>PRICE TICK</span>
+                                <span class="label-hint">Unsigned Int</span>
+                            </label>
+                            <div class="input-with-steppers">
+                                <button type="button" class="step-btn" id="btnDecPrice">-</button>
+                                <input type="number" id="inputPrice" value="100" min="1" max="99999" required>
+                                <button type="button" class="step-btn" id="btnIncPrice">+</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="groupQty">
+                            <label for="inputQty">
+                                <span>QUANTITY</span>
+                                <span class="label-hint">Units</span>
+                            </label>
+                            <div class="input-with-steppers">
+                                <button type="button" class="step-btn" id="btnDecQty">-</button>
+                                <input type="number" id="inputQty" value="10" min="1" max="1000000" required>
+                                <button type="button" class="step-btn" id="btnIncQty">+</button>
+                            </div>
+                            <div class="quick-qty-chips">
+                                <button type="button" class="chip" data-qty="10">10</button>
+                                <button type="button" class="chip" data-qty="25">25</button>
+                                <button type="button" class="chip" data-qty="50">50</button>
+                                <button type="button" class="chip" data-qty="100">100</button>
+                                <button type="button" class="chip" data-qty="500">500</button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="inputOwner">
+                                    <span>OWNER ID</span>
+                                    <span class="label-hint">Trader Account</span>
+                                </label>
+                                <input type="number" id="inputOwner" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputId">
+                                    <span>ORDER ID</span>
+                                    <span class="label-hint">Unique uint64</span>
+                                </label>
+                                <input type="number" id="inputId" value="1001" min="1">
+                            </div>
+                        </div>
+
+                        <!-- 1-Click Fast Actions -->
+                        <div class="fast-actions-grid">
+                            <button type="button" class="btn-fast" id="btnJoinBid">Join Best Bid</button>
+                            <button type="button" class="btn-fast" id="btnJoinAsk">Join Best Ask</button>
+                            <button type="button" class="btn-fast" id="btnCross">Cross Spread (Taker)</button>
+                            <button type="button" class="btn-fast btn-fast-stp" id="btnTestSTP" title="Submit opposing order with same Owner ID to test Cancel Aggressor Remainder">
+                                Test STP Prevention
+                            </button>
+                        </div>
+
+                        <!-- Main Submit Button -->
+                        <button type="submit" class="btn-submit btn-submit-buy" id="btnSubmitOrder">
+                            <span id="submitLabel">SUBMIT LIMIT BUY</span>
+                            <span class="submit-sub" id="submitSub">ZERO HEAP ALLOCATION</span>
+                        </button>
+                    </form>
+
+                    <!-- Active User Orders Blotter -->
+                    <div class="active-orders-section">
+                        <div class="section-title">
+                            <h3>MY RECENT RESTING ORDERS</h3>
+                            <span class="count-badge" id="myOrdersCount">0</span>
+                        </div>
+                        <div class="orders-table-wrapper">
+                            <table class="table-compact" id="myOrdersTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>SIDE</th>
+                                        <th>PRICE</th>
+                                        <th>QTY</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="empty-row"><td colspan="5">No active resting orders</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Column: Level 2 Depth Ladder & Canvas Depth Chart -->
+            <section class="panel panel-center">
+                <!-- Top of Book Banner (BBO) -->
+                <div class="bbo-banner">
+                    <div class="bbo-card bbo-bid">
+                        <div class="bbo-title">BEST BID</div>
+                        <div class="bbo-price text-green" id="bboBidPrice">--</div>
+                        <div class="bbo-qty" id="bboBidQty">-- qty</div>
+                    </div>
+
+                    <div class="spread-indicator">
+                        <div class="spread-label">SPREAD</div>
+                        <div class="spread-value" id="bboSpread">-- ticks</div>
+                        <div class="mid-price" id="bboMid">MID: --</div>
+                    </div>
+
+                    <div class="bbo-card bbo-ask">
+                        <div class="bbo-title">BEST ASK</div>
+                        <div class="bbo-price text-red" id="bboAskPrice">--</div>
+                        <div class="bbo-qty" id="bboAskQty">-- qty</div>
+                    </div>
+                </div>
+
+                <!-- Level 2 Depth Ladder (DOM) -->
+                <div class="depth-ladder-container">
+                    <div class="ladder-header">
+                        <div class="col-count">ORDERS</div>
+                        <div class="col-size">SIZE</div>
+                        <div class="col-bar">DEPTH ACCUMULATION</div>
+                        <div class="col-price">PRICE TICK</div>
+                    </div>
+
+                    <!-- Asks Ladder (Red, sorted ascending from spread up) -->
+                    <div class="ladder-asks-container" id="ladderAsks">
+                        <div class="empty-ladder">Awaiting ask depth...</div>
+                    </div>
+
+                    <!-- Spread Divider -->
+                    <div class="ladder-spread-divider" id="ladderSpreadDivider">
+                        <span>--- SPREAD <strong id="dividerSpreadText">0 ticks</strong> ---</span>
+                    </div>
+
+                    <!-- Bids Ladder (Green, sorted descending from spread down) -->
+                    <div class="ladder-bids-container" id="ladderBids">
+                        <div class="empty-ladder">Awaiting bid depth...</div>
+                    </div>
+                </div>
+
+                <!-- Cumulative Market Depth Chart -->
+                <div class="depth-chart-wrapper">
+                    <div class="chart-header">
+                        <h3>CUMULATIVE MARKET DEPTH CURVE</h3>
+                        <span class="chart-legend">
+                            <span class="legend-box legend-bid"></span> Bids (Green)
+                            <span class="legend-box legend-ask"></span> Asks (Red)
+                        </span>
+                    </div>
+                    <canvas id="depthCanvas" width="600" height="150"></canvas>
+                </div>
+            </section>
+
+            <!-- Right Column: Trade Tape, Event Log, System Telemetry -->
+            <section class="panel panel-telemetry">
+                <!-- Live Trade Tape -->
+                <div class="sub-panel">
+                    <div class="panel-header">
+                        <h2>LIVE TRADE TAPE</h2>
+                        <span class="badge" id="tradeCountBadge">0 FILLS</span>
+                    </div>
+                    <div class="trade-tape-wrapper">
+                        <table class="table-compact tape-table">
+                            <thead>
+                                <tr>
+                                    <th>SEQ</th>
+                                    <th>PRICE</th>
+                                    <th>QTY</th>
+                                    <th>SIDE</th>
+                                    <th>MATCH (MAKER &rarr; TAKER)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tradeTapeBody">
+                                <tr class="empty-row"><td colspan="5">No trades executed yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Engine Events Blotter -->
+                <div class="sub-panel">
+                    <div class="panel-header">
+                        <h2>ENGINE EVENT STREAM</h2>
+                        <span class="badge badge-mono">EVENT SINK AUDIT</span>
+                    </div>
+                    <div class="event-feed-wrapper" id="eventFeed">
+                        <div class="event-item event-info">
+                            <span class="event-tag">SYSTEM</span>
+                            <span class="event-desc">NexusMatch C++ matching engine initialized. Ready for commands.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Low-Latency Performance & Architecture Audit -->
+                <div class="sub-panel performance-audit-card">
+                    <div class="panel-header">
+                        <h2>ARCHITECTURE TELEMETRY</h2>
+                        <span class="badge badge-green">AUDIT VERIFIED</span>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span class="metric-title">CORE DISPATCH LATENCY</span>
+                            <span class="metric-number text-highlight" id="metricLatency">190 ns</span>
+                            <span class="metric-sub">Calibrated steady_clock / RDTSCP</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-title">TOTAL ORDERS ACCEPTED</span>
+                            <span class="metric-number" id="metricAccepted">0</span>
+                            <span class="metric-sub">Processed through arena free list</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-title">TOTAL CANCELS HANDLED</span>
+                            <span class="metric-number" id="metricCancels">0</span>
+                            <span class="metric-sub">Robin Hood backward-shift O(1)</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-title">STP CANCEL AGGRESSOR</span>
+                            <span class="metric-number text-cyan" id="metricSTP">0</span>
+                            <span class="metric-sub">Self-trade prevention cancellations</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Application Script -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -70,6 +70,12 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" AND TARGET nexusmatch_core)
     target_link_libraries(nexusmatch_demo PRIVATE nexusmatch_core)
 endif()
 
+# Web server gateway engine executable
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/server_main.cpp" AND TARGET nexusmatch_core)
+    add_executable(nexusmatch_server src/server_main.cpp)
+    target_link_libraries(nexusmatch_server PRIVATE nexusmatch_core)
+endif()
+
 # Tests
 if(BUILD_TESTS)
     enable_testing()
