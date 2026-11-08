@@ -40,7 +40,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     endif()
 endif()
 
-include_directories(include)
+include_directories(include .)
 
 # Check which core sources exist
 set(CORE_SOURCES "")

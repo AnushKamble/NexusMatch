@@ -1,0 +1,60 @@
+{
+  "results": [
+    {
+      "engine": "NexusMatch",
+      "scenario": "Balanced-Mixed",
+      "orders": 1000000,
+      "throughput_ops_sec": 3.54837e+06,
+      "p50_ns": 190,
+      "p90_ns": 290,
+      "p95_ns": 360,
+      "p99_ns": 480,
+      "p999_ns": 730,
+      "hot_path_allocations": 0,
+      "total_trades": 611658,
+      "state_hash": 13756726648339665759
+    },
+    {
+      "engine": "Baseline(Map)",
+      "scenario": "Balanced-Mixed",
+      "orders": 200000,
+      "throughput_ops_sec": 4.29704e+06,
+      "p50_ns": 160,
+      "p90_ns": 330,
+      "p95_ns": 400,
+      "p99_ns": 561,
+      "p999_ns": 931,
+      "hot_path_allocations": 257717,
+      "total_trades": 122119,
+      "state_hash": 0
+    },
+    {
+      "engine": "NexusMatch",
+      "scenario": "Cancel-Heavy",
+      "orders": 1000000,
+      "throughput_ops_sec": 4.77633e+06,
+      "p50_ns": 140,
+      "p90_ns": 241,
+      "p95_ns": 300,
+      "p99_ns": 450,
+      "p999_ns": 641,
+      "hot_path_allocations": 0,
+      "total_trades": 349947,
+      "state_hash": 10302882336824611983
+    },
+    {
+      "engine": "NexusMatch",
+      "scenario": "Trade-Heavy",
+      "orders": 1000000,
+      "throughput_ops_sec": 3.36718e+06,
+      "p50_ns": 210,
+      "p90_ns": 320,
+      "p95_ns": 400,
+      "p99_ns": 491,
+      "p999_ns": 751,
+      "hot_path_allocations": 0,
+      "total_trades": 500000,
+      "state_hash": 7756846228131888485
+    }
+  ]
+}
