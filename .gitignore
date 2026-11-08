@@ -25,3 +25,4 @@ benchmark_results/
 wal_data/
 *.wal
 build_asan/
+build_tsan/
