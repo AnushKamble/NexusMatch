@@ -25,7 +25,7 @@ def main():
     print("Starting server... Press Ctrl+C to terminate.\n")
 
     try:
-        subprocess.run([sys.executable, str(server_script)])
+        subprocess.run([sys.executable, str(server_script)] + sys.argv[1:])
     except KeyboardInterrupt:
         print("\n[NexusMatch] Web terminal shutting down cleanly.")
 

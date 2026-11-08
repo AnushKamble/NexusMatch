@@ -223,9 +223,27 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 async def root():
     return FileResponse(STATIC_DIR / "index.html")
 
+def find_available_port(start_port=8088, max_attempts=20):
+    import socket
+    for p in range(start_port, start_port + max_attempts):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(("0.0.0.0", p))
+                return p
+            except OSError:
+                continue
+    return start_port
+
 if __name__ == "__main__":
     import uvicorn
-    port = 8088
+    import argparse
+
+    parser = argparse.ArgumentParser(description="NexusMatch Web Terminal Server")
+    parser.add_argument("--port", type=int, default=None, help="Port to bind (default: auto-find starting from 8088)")
+    args = parser.parse_args()
+
+    port = args.port if args.port else find_available_port(8088)
+
     print(f"===========================================================")
     print(f"  NEXUSMATCH HIGH-FREQUENCY MATCHING ENGINE WEB TERMINAL  ")
     print(f"  Listening on: http://localhost:{port}                    ")
