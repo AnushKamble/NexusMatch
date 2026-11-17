@@ -1,7 +1,7 @@
 # NexusMatch (QD-01)
 ## Ultra-Low-Latency Limit Order Book & Matching Engine in Modern C++20
 
-[![NexusMatch CI](https://github.com/example/nexusmatch/actions/workflows/ci.yml/badge.svg)](https://github.com/example/nexusmatch)
+[![NexusMatch CI](https://github.com/AnushKamble/NexusMatch/actions/workflows/ci.yml/badge.svg)](https://github.com/AnushKamble/NexusMatch)
 [![Language: C++20](https://img.shields.io/badge/Language-C%2B%2B20-blue.svg)](https://en.cppreference.com/w/cpp/20)
 [![Standard: Zero-Allocation](https://img.shields.io/badge/Hot--Path-Zero--Allocation-brightgreen.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
